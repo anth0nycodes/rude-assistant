@@ -9,25 +9,28 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def use_webcam():
-    # Captures video from the default webcam (index 0)
-    video_capture = cv.VideoCapture(0)
+# Create an ObjectDetector object.
+OBJECT_MODEL_PATH = os.getenv("OBJECT_MODEL_PATH")
 
-    # keeps a constant loop to read frames from the webcam
-    while True:
-        ret, frame = video_capture.read()
+if OBJECT_MODEL_PATH is None:
+    raise ValueError("MODEL_PATH environment variable is not set.")
 
-        # flips the frame horizontally for a mirror-like effect
-        flipped_frame = cv.flip(frame, 1)
+base_options = python.BaseOptions(model_asset_path=OBJECT_MODEL_PATH)
+options = vision.ObjectDetectorOptions(base_options=base_options, score_threshold=0.5)
+detector = vision.ObjectDetector.create_from_options(options)
 
-        if ret:
-            detect_objects(flipped_frame)
-        # waits for the 'q' key to be pressed to exit the loop
-        if cv.waitKey(1) & 0xFF == ord("q"):
-            break
 
-    video_capture.release()  # Releases the camera hardware so other apps can use your webcam afterward
-    cv.destroyAllWindows()  # Closes every OpenCV window
+def detect_objects(frame):
+    # Load the input image.
+    image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+
+    # Detect objects in the input image.
+    detection_result = detector.detect(image)
+
+    # # Visualize the detection result.
+    image_copy = np.copy(image.numpy_view())
+    annotated_image = visualize(image_copy, detection_result)
+    cv.imshow("Webcam", annotated_image)
 
 
 def visualize(image_copy, detection_result):
@@ -77,29 +80,28 @@ def visualize(image_copy, detection_result):
     return image_copy
 
 
-def detect_objects(frame):
-    MODEL_PATH = os.getenv("MODEL_PATH")
+def use_webcam():
+    # Captures video from the default webcam (index 0)
+    video_capture = cv.VideoCapture(0)
 
-    if MODEL_PATH is None:
-        raise ValueError("MODEL_PATH environment variable is not set.")
+    # keeps a constant loop to read frames from the webcam
+    while True:
+        ret, frame = video_capture.read()
 
-    # Create an ObjectDetector object.
-    base_options = python.BaseOptions(model_asset_path=MODEL_PATH)
-    options = vision.ObjectDetectorOptions(
-        base_options=base_options, score_threshold=0.5
-    )
-    detector = vision.ObjectDetector.create_from_options(options)
+        if not ret:
+            break
 
-    # Load the input image.
-    image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+        # flips the frame horizontally for a mirror-like effect
+        flipped_frame = cv.flip(frame, 1)
 
-    # Detect objects in the input image.
-    detection_result = detector.detect(image)
+        detect_objects(flipped_frame)
 
-    # # Visualize the detection result.
-    image_copy = np.copy(image.numpy_view())
-    annotated_image = visualize(image_copy, detection_result)
-    cv.imshow("Webcam", annotated_image)
+        # waits for the 'q' key to be pressed to exit the loop
+        if cv.waitKey(1) & 0xFF == ord("q"):
+            break
+
+    video_capture.release()  # Releases the camera hardware so other apps can use your webcam afterward
+    cv.destroyAllWindows()  # Closes every OpenCV window
 
 
 def main():
