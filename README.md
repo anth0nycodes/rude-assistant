@@ -1,6 +1,6 @@
-# rude-assistant
+# terrible-coworker
 
-Your worst coworker, but in software form. A sarcastic AI assistant that watches you via webcam, judges your posture, monitors your productivity, and verbally roasts you throughout the workday.
+Your worst coworker, but in software form. A sarcastic AI assistant that watches you via webcam, judges your posture, monitors your productivity, and verbally roasts you throughout the workday. .
 
 ## What It Does
 
@@ -23,10 +23,9 @@ This is an AI-powered desktop companion that:
 
 ### 2. Productivity Shaming
 
-- Detects if you're using your cellphone with computer vision
+- Detects if you look at your phone (head angle down + hand near face)
 - If you leave the camera: "Oh sure, just abandon me"
 - If you're gone too long: Plays annoying sounds when you return
-- GPT-generated insults about your phone usage habits
 - Tracks how long you've been "productive" (barely)
 
 ### 3. Voice Commands (That It Judges)
@@ -90,4 +89,4 @@ MIT - Feel free to use this to roast yourself or your friends
 
 ---
 
-_"Wow, still reading? Get back to work."_ - rude-assistant
+_"Wow, still reading? Get back to work."_ - terrible-coworker
